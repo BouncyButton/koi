@@ -9,9 +9,9 @@ setup(
     packages=find_packages(exclude=['build', 'doc', 'templates']),
     version='0.0.0',
     install_requires=[
-        "numpy",
-        "scipy",
-        "torch"
+        # "numpy",
+        # "scipy",
+        # "torch"
     ],
     python_requires='>=3.6',
     license="MIT",
