@@ -1,15 +1,22 @@
 from dotmap import DotMap
+from torch import nn
+
+from koi.config.base_config import BaseConfig
 
 
-class GenerativeModel:
+class GenerativeModel(nn.Module):
     """
     Abstract base class for any generative model implemented by koi.
     Gracefully provided by github.com/makgyver and edited
     """
-    def __init__(self, x_dim=2, **kwargs):
-        self.config = DotMap()
+    def __init__(self, x_dim=2, config=BaseConfig(), **kwargs):
+        super().__init__()
+        self.config = config
         self.x_dim = x_dim
         self.kwargs = kwargs
+
+    # def __call__(self, *args, **kwargs):
+    #     raise NotImplementedError()
 
     def save_model(self, filepath, *args, **kwargs):
         r"""Save the model to file.

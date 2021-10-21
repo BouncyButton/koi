@@ -1,8 +1,11 @@
 from dotmap import DotMap
 
+from koi.config.base_config import BaseConfig
 
-class BaseConfig:
+
+class VAEConfig(BaseConfig):
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.optimizer = 'adam'
         self.torch_device = 'cpu'
         self.kl_annealing = False

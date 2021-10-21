@@ -1,12 +1,15 @@
+import torch
 from torch.utils.data import Dataset, DataLoader, sampler
+
+from koi.config.base_config import BaseConfig
 
 
 class KoiDataset(Dataset):
-    def __init__(self, X, y, transform, batch_size=80, create_data_loaders=True):
+    def __init__(self, X, y, transform=torch.Tensor, create_data_loaders=True, config=BaseConfig()):
         self.X = X
         self.targets = y
         self.transform = transform
-        self.batch_size = batch_size
+        self.batch_size = config.batch_size
         self.dl = self.dlp = self.dln = None
         if create_data_loaders:
             self.create_data_loaders()
@@ -36,8 +39,8 @@ class KoiDataset(Dataset):
 
         return dl
 
-    def create_data_loaders(self, filtered=[0], unfiltered=[1]):
+    def create_data_loaders(self, positive=[1], negative=[0]):
         self.dl = DataLoader(
             dataset=self, batch_size=self.batch_size, shuffle=True)
-        self.dln = self.filter_dataset(unfiltered)
-        self.dlp = self.filter_dataset(filtered)
+        self.dln = self.filter_dataset(negative)
+        self.dlp = self.filter_dataset(positive)
