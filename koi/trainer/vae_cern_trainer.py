@@ -2,7 +2,11 @@ from koi.trainer.vae_trainer import VAETrainer
 
 
 class VAECernTrainer(VAETrainer):
-    def _training_epoch(self, step, epoch, dl):
+    def _run_epoch(self, step, epoch, dataset, **kwargs):
+        if dataset is None:
+            return
+
+        dl = dataset.dlp
         device = self.device
         x_dim = self.config.x_dim
         nll, kld, kl_weight = None, None, None
@@ -16,9 +20,10 @@ class VAECernTrainer(VAETrainer):
             nll, kld, loss = self.model.loss_function(recon_x, x, mean, log_var, kl_weight=kl_weight,
                                                       recon_log_var=recon_log_var)
 
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
+            if dataset.is_train():
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
 
         # todo tensorboard
         print("nll: {0:.4f}, kld: {1:.4f}, klw: {2:.4f}".format(nll.item(), kld.item(), kl_weight))

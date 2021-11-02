@@ -67,10 +67,17 @@ class VAECern(VAE):
         N = torch.tensor(x.size()[1])
 
         # giusto fare .sum() così? o in dim=1? TODO
+        # questo da risultati giusti, ma teoricamente mi pare sbagliato
         NLL = (recon_error / recon_var).sum(dim=1) \
               + torch.log(recon_var.sum(dim=1)) \
               + N * torch.log(2 * torch.tensor(math.pi))
-        NLL *= 0.5
+
+        # questo teoricamente mi sembra giusto, ma mi da risultati sbagliati
+        #NLL = (recon_error / recon_var + torch.log(recon_var)).sum(dim=1) \
+        #      + N * torch.log(2 * torch.tensor(math.pi))
+        # TODO ???
+
+        # NLL *= 0.5
         # last term is constant, but i'd like to add it anyway to have the most precise formulation.
         # TODO: ensure this is correct
 

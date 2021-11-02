@@ -1,4 +1,5 @@
 import torch
+import math
 from torch import nn
 
 from koi.config.base_config import BaseConfig
@@ -115,6 +116,21 @@ class VAE(GenerativeModel):
 
         KLD = torch.mean(-0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp(), dim=1), dim=0)
 
+        N = torch.tensor(x.size(1))
+        # NLL = 0.5 * recon_error.sum(dim=1) + 0.5 * N * torch.log(2 * torch.tensor(math.pi)) + 0.5 * torch.log(N)
+        NLL = recon_error.sum(dim=1)
+        NLL = NLL.mean()  # why summing? it should be mean!
+
+        loss = (NLL + KLD * kl_weight)
+
+        return NLL / x.size(0), KLD / x.size(0), loss / x.size(0)
+
+    def not_working_loss_function(self, recon_x, x, mean, log_var, kl_weight=torch.tensor(1.)):
+
+        recon_error = dst(recon_x, x, dst_function=self.config.dst_function)
+
+        KLD = -0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp(), dim=1) # , dim=0)
+
         # KL_weight, anneal_parameter_beta =   # todo: rimuovere secondo elemento tornato
 
         # recon_std = torch.exp(0.5 * recon_log_var)
@@ -146,7 +162,7 @@ class VAE(GenerativeModel):
 
         # NLL = 0.5 * dst.sum(dim=1) + 0.5 * N * torch.log(2 * torch.tensor(math.pi)) + 0.5 * torch.log(N)
         NLL = recon_error.sum(dim=1)
-        NLL = NLL.sum()
+        # NLL = NLL.sum()
 
         # assert NLL > 0
         # TODO NLL = 0.5 * (dst / var).sum(dim=1) + 0.5 * N * torch.log(2 * torch.tensor(math.pi)) + 0.5 * torch.log(
@@ -154,4 +170,4 @@ class VAE(GenerativeModel):
 
         loss = (NLL + KLD * kl_weight)  # * KL_weight)
 
-        return NLL / x.size(0), KLD / x.size(0), loss / x.size(0)
+        return NLL.mean(), KLD.mean(), loss.mean()

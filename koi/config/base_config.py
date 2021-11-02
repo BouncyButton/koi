@@ -3,13 +3,17 @@ from dotmap import DotMap
 
 class BaseConfig:
     def __init__(self, **kwargs):
+        self.logs_folder = 'I:\\Data\\runs'
+        # self.k_folds = 2
+        self.gamma = None
+        self.abc_annealing = None
         self.optimizer = 'adam'
         self.torch_device = 'cpu'
         self.kl_annealing = False
-        self.seed = 0
+        self.seed = 2
         self.epochs = 100
         self.warm_up_epochs = self.epochs // 2
-        self.batch_size = 128
+        self.batch_size = 100
         self.learning_rate = 0.001
         self.encoder_layer_sizes = [2, 10]  # todo remove first
         self.decoder_layer_sizes = [10, 2]

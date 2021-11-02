@@ -7,9 +7,9 @@ from sklearn import cluster, datasets
 
 
 class MoonsDataset(KoiDataset):
-    def __init__(self, N=10000, noise=0.2, config=BaseConfig()):
+    def __init__(self, N=10000, noise=0.2, config=BaseConfig(), **kwargs):
         X, y = datasets.make_moons(n_samples=N, noise=noise, random_state=config.seed)
-        super().__init__(X, y, torch.Tensor, config=config)
+        super().__init__(X, y, torch.Tensor, config=config, **kwargs)
 
     def get_positive_data(self):
         return self.X[self.targets == 1]

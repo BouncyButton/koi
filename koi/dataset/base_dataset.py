@@ -1,16 +1,18 @@
 import torch
+from sklearn.model_selection import KFold
 from torch.utils.data import Dataset, DataLoader, sampler
 
 from koi.config.base_config import BaseConfig
 
 
 class KoiDataset(Dataset):
-    def __init__(self, X, y, transform=torch.Tensor, create_data_loaders=True, config=BaseConfig()):
+    def __init__(self, X, y, transform=torch.Tensor, create_data_loaders=True, config=BaseConfig(), split='train'):
         self.X = X
         self.targets = y
         self.transform = transform
         self.batch_size = config.batch_size
         self.dl = self.dlp = self.dln = None
+        self.split = split
         if create_data_loaders:
             self.create_data_loaders()
 
@@ -44,3 +46,26 @@ class KoiDataset(Dataset):
             dataset=self, batch_size=self.batch_size, shuffle=True)
         self.dln = self.filter_dataset(negative)
         self.dlp = self.filter_dataset(positive)
+
+    def is_train(self):
+        return self.split == 'train'
+
+    # def create_data_loaders_xv(self, k_folds, positive=[1], negative=[0]):
+    #     if not self.is_train():
+    #         raise ValueError("Can't cross validate test data")
+    #
+    #     self.train_folds = []
+    #     self.val_folds = []
+    #     kcv = KFold(n_splits=k_folds, shuffle=True)
+    #     split = kcv.split(self)
+    #
+    #     for fold, (train_ids, val_ids) in enumerate(split):
+    #         self.train_folds.append()
+
+        # dataset = ConcatDataset([self.train, self.test])
+
+        # kfold = KFold(n_splits=self.config.k_folds, shuffle=True)
+        # train_subsampler = torch.utils.data.SubsetRandomSampler(train_ids)
+        # val_subsampler = torch.utils.data.SubsetRandomSampler(val_ids)
+        #
+        # for fold, (train_ids, val_ids) in enumerate(kfold.split(self.train)):

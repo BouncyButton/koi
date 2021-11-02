@@ -3,6 +3,7 @@ from dotmap import DotMap
 from koi.config.base_config import BaseConfig
 
 
+# move to superclass method
 class FailFastConfig(BaseConfig):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

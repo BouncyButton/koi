@@ -1,24 +1,26 @@
 from koi.config.fail_fast_config import FailFastConfig
-from koi.config.vae_config import VAEConfig
+from koi.config.vabc_config import VABCConfig
 from koi.dataset.moons_dataset import MoonsDataset
 from koi.model.vae import VAE
 from koi.config.base_config import BaseConfig
+from koi.model.vabc import VABC
 from koi.model.vae_cern import VAECern
 from koi.model.vae_correct_loss import VAECorrectLoss
 from koi.trainer.base_trainer import Trainer
+from koi.trainer.vabc_trainer import VABCTrainer
 from koi.trainer.vae_cern_trainer import VAECernTrainer
 from koi.trainer.vae_trainer import VAETrainer
 from koi.visualizer.toy_example import ToyExampleVisualizer
 
 
-class VAEOnToyDataset:
+class VABCOnToyDataset:
     def __init__(self, test=False):
-        config = FailFastConfig() if test else VAEConfig()
-        # TODO make toy VAE config and make BaseConfig as abstract as possible
+        config = VABCConfig()
+
         train = MoonsDataset(config=config, split='train')
-        val = MoonsDataset(N=10000, config=config, split='val')
+        val = MoonsDataset(N=1000, config=config, split='val')
         test = MoonsDataset(N=1000, config=config, split='test')
-        self.trainer = VAETrainer(model_type=VAE, config=config, train=train, val=val, test=test)
+        self.trainer = VABCTrainer(model_type=VABC, config=config, train=train, val=val, test=test)
 
     def run(self):
         self.trainer.run_training()
@@ -28,5 +30,5 @@ class VAEOnToyDataset:
 
 if __name__ == '__main__':
     print('dev')
-    ex = VAEOnToyDataset()
+    ex = VABCOnToyDataset()
     ex.run()

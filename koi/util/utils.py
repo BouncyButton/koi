@@ -16,7 +16,7 @@ def dst(recon_x, x, dst_function='mse'):
         d = MSE
 
     elif dst_function == 'bce':
-        BCE = torch.nn.functional.binary_cross_entropy(mu, x, reduction='none').sum(dim=1)
+        BCE = torch.nn.functional.binary_cross_entropy(mu, x, reduction='none') # .sum(dim=1)
         d = BCE
 
     elif dst_function == 'l2-norm':
