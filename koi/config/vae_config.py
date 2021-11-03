@@ -8,7 +8,7 @@ class VAEConfig(BaseConfig):
         super().__init__(**kwargs)
         self.optimizer = 'adam'
         self.torch_device = 'cpu'
-        self.kl_annealing = True
+        self.kl_annealing = False
         self.seed = 0
         self.epochs = 50
         self.warm_up_epochs = self.epochs // 2

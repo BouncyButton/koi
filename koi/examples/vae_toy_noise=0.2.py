@@ -16,9 +16,9 @@ class VAEOnToyDataset:
     def __init__(self, test=False):
         config = FailFastConfig() if test else VAEConfig()
         # TODO make toy VAE config and make BaseConfig as abstract as possible
-        train = MoonsDataset(config=config, split='train')
-        val = MoonsDataset(N=10000, config=config, split='val')
-        test = MoonsDataset(N=1000, config=config, split='test')
+        train = MoonsDataset(config=config, split='train', label_noise=0.2)
+        val = MoonsDataset(N=10000, config=config, split='val', label_noise=0.2)
+        test = MoonsDataset(N=1000, config=config, split='test', label_noise=0.2)
         self.trainer = VAETrainer(model_type=VAE, config=config, train=train, val=val, test=test)
 
     def run(self):

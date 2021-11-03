@@ -37,6 +37,11 @@ class Trainer:
         np.random.seed(config.seed)
         random.seed(config.seed)
 
+        # better specify here, so you don't need to give it as parameter.
+        train.split = 'train'
+        val.split = 'val'
+        test.split = 'test'
+
         self.train = train
         self.val = val
         self.test = test

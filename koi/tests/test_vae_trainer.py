@@ -12,8 +12,10 @@ from koi.visualizer.toy_example import ToyExampleVisualizer
 
 def test_vae_trainer():
     config = FailFastConfig()
-    dataset = MoonsDataset(config=config)
-    trainer = VAETrainer(model_type=VAE, train=dataset, test=None, config=config)
+    train = MoonsDataset(N=10, config=config)
+    test = MoonsDataset(N=10, config=config)
+    val = MoonsDataset(N=10, config=config)
+    trainer = VAETrainer(train=train, val=val, test=test, config=config)
     trainer.run_training()
     v = ToyExampleVisualizer(trainer)
     v.show_2d_samples(test=True)
@@ -21,8 +23,10 @@ def test_vae_trainer():
 
 def test_vae_correct_loss_trainer():
     config = FailFastConfig()
-    dataset = MoonsDataset(config=config)
-    trainer = VAETrainer(model_type=VAECorrectLoss, train=dataset, test=None, config=config)
+    train = MoonsDataset(N=10, config=config)
+    test = MoonsDataset(N=10, config=config)
+    val = MoonsDataset(N=10, config=config)
+    trainer = VAETrainer(train=train, val=val, test=test, config=config)
     trainer.run_training()
     v = ToyExampleVisualizer(trainer)
     v.show_2d_samples(test=True)
@@ -31,8 +35,10 @@ def test_vae_correct_loss_trainer():
 def test_vae_cern_trainer():
     config = CernConfig()
     config.epochs = 1
-    dataset = MoonsDataset(config=config)
-    trainer = VAECernTrainer(model_type=VAECern, train=dataset, test=None, config=config)
+    train = MoonsDataset(N=10, config=config)
+    test = MoonsDataset(N=10, config=config)
+    val = MoonsDataset(N=10, config=config)
+    trainer = VAETrainer(train=train, val=val, test=test, config=config)
     trainer.run_training()
     v = ToyExampleVisualizer(trainer)
     v.show_2d_samples(test=True)
