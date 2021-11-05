@@ -11,7 +11,7 @@ def test_moons_dataset():
 def test_noise_dataset():
     from koi.dataset.moons_dataset import MoonsDataset
     md = MoonsDataset(label_noise=0.2)
-    md.view2d()
+    md.view2d(show=False)
 
 
 if __name__ == '__main__':

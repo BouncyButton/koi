@@ -15,7 +15,7 @@ class VAECorrectLoss(VAE):
 
         # by deriving log normal(x;recon_x,I), we obtain the following.
         # after recon error the value can be ignored (no gradient is provided)
-        NLL = 0.5 * recon_error.sum(dim=1) + 0.5 * N * torch.log(2 * torch.tensor(math.pi)) + 0.5 * torch.log(N)
+        NLL = 0.5 * recon_error.sum(dim=1) + 0.5 * N * torch.log(2 * torch.tensor(math.pi))
         NLL = NLL.sum()
 
         loss = (NLL + KLD * kl_weight)

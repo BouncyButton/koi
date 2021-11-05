@@ -9,7 +9,7 @@ class VAECernTrainer(VAETrainer):
         dl = dataset.dlp
         device = self.device
         x_dim = self.config.x_dim
-        nll, kld, kl_weight = None, None, None
+        nll, kld, kl_weight, loss = (None,) * 4
 
         for iteration, (x, label) in enumerate(dl):
             step += 1
@@ -17,7 +17,7 @@ class VAECernTrainer(VAETrainer):
             x = x.reshape(-1, x_dim)
             recon_x, recon_log_var, mean, log_var, z = self.model(x, sample=True)
             kl_weight, beta = self.get_current_kl(step)
-            nll, kld, loss = self.model.loss_function(recon_x, x, mean, log_var, kl_weight=kl_weight,
+            nll, kld, loss = self.model.loss_function_from_paper(recon_x, x, mean, log_var, kl_weight=kl_weight,
                                                       recon_log_var=recon_log_var)
 
             if dataset.is_train():
@@ -26,5 +26,8 @@ class VAECernTrainer(VAETrainer):
                 self.optimizer.step()
 
         # todo tensorboard
-        print("nll: {0:.4f}, kld: {1:.4f}, klw: {2:.4f}".format(nll.item(), kld.item(), kl_weight))
+        # print("nll: {0:.4f}, kld: {1:.4f}, klw: {2:.4f}".format(nll.item(), kld.item(), kl_weight))
+        self._log(dataset.split, epoch, nll=nll.item(), kld=kld.item(), kl_weight=kl_weight,
+                  loss=loss.item())
+
         return step

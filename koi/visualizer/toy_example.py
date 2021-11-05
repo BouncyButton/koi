@@ -22,7 +22,7 @@ class ToyExampleVisualizer:
         show_var = isinstance(self.model, VAECern)
 
         if show_var:
-            recon_mu, recon_log_var = self.model.inference(z)
+            recon_mu, recon_log_var = self.model.inference_mean_logvar(z)
             sampled_x = torch.normal(mean=recon_mu, std=torch.exp(0.5 * recon_log_var))
             recon_mu = recon_mu.cpu().detach().numpy()
             # show mu

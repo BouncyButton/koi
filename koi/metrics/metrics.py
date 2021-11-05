@@ -5,6 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
 
+# should move as trainer method?
 def generative_negative_error(trainer):
     model = trainer.model
     X, y = trainer.test.X_original, trainer.test.y_original

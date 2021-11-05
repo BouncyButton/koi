@@ -3,6 +3,7 @@ from dotmap import DotMap
 
 class BaseConfig:
     def __init__(self, **kwargs):
+        self.start_gamma_multiplier = None
         self.logs_folder = 'I:\\Data\\runs'
         # self.k_folds = 2
         self.gamma = None
@@ -20,8 +21,6 @@ class BaseConfig:
         self.latent_size = 1
         self.print_every = 1000
         self.beta = 1  # 1 / 20
-        self.gamma0 = 0.8
-        self.gamma1 = 0.2
         self.gamma_prime = 1
         self.fig_root = 'figures'
         self.conditional = False

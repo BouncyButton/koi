@@ -10,6 +10,7 @@ from koi.util.utils import dst
 
 
 class VAECern(VAE):
+    # loss based on https://arxiv.org/abs/2010.05531
     # based on https://github.com/timbmg/VAE-CVAE-MNIST/ implementation
 
     class Decoder(nn.Module):
@@ -52,9 +53,33 @@ class VAECern(VAE):
 
         return recon_x, recon_log_var, means, log_var, z
 
-    def inference(self, z):
+    def inference(self, z, scale=1):
+        recon_x, recon_log_var = self.decoder(z)
+        sampled_x = torch.normal(mean=recon_x, std=torch.exp(0.5 * recon_log_var) * scale)
+
+        return sampled_x
+
+    def inference_mean_logvar(self, z):
         recon_x, recon_log_var = self.decoder(z)
         return recon_x, recon_log_var
+
+    def loss_function_from_paper(self, recon_x, x, mean, log_var, kl_weight=torch.tensor(1.), recon_log_var=None):
+        recon_error = dst(recon_x, x, dst_function=self.config.dst_function)
+
+        KLD = torch.mean(-0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp(), dim=1), dim=0)
+
+        recon_var = torch.exp(recon_log_var)
+        recon_std = torch.sqrt(recon_var)
+
+        NLL = (0.5 * recon_error / recon_var).sum(dim=1) \
+              + torch.log(torch.sqrt(2 * torch.tensor(math.pi)) * recon_std.sum(dim=1)) \
+            # + N * torch.log(2 * torch.tensor(math.pi))
+
+        NLL = NLL.sum()
+
+        loss = (NLL + KLD * kl_weight)
+
+        return NLL / x.size(0), KLD / x.size(0), loss / x.size(0)
 
     def loss_function(self, recon_x, x, mean, log_var, kl_weight=torch.tensor(1.), recon_log_var=None):
 
@@ -73,7 +98,7 @@ class VAECern(VAE):
               + N * torch.log(2 * torch.tensor(math.pi))
 
         # questo teoricamente mi sembra giusto, ma mi da risultati sbagliati
-        #NLL = (recon_error / recon_var + torch.log(recon_var)).sum(dim=1) \
+        # NLL = (recon_error / recon_var + torch.log(recon_var)).sum(dim=1) \
         #      + N * torch.log(2 * torch.tensor(math.pi))
         # TODO ???
 

@@ -28,5 +28,5 @@ class VABC(VAE):
 
         loss = (NLL + KLD * kl_weight)
 
-        return NLL / x.size(0), KLD / x.size(0), loss / x.size(0), ((1 - y) * anti_recon_error).sum() / x.size(0), \
+        return NLL / x.size(0), KLD / x.size(0), loss / x.size(0), -((1 - y) * anti_recon_error).sum() / x.size(0), \
                (y * recon_error).sum() / x.size(0)

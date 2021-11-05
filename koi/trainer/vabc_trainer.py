@@ -27,10 +27,18 @@ class VABCTrainer(VAETrainer):
         if self.config.abc_annealing:
             # mi interessa che gamma non vada mai sotto il valore che ho scelto.
             # faccio quindi un annealing FINO a warm_up_epochs, poi assume il valore normale.
-            anneal_parameter_gamma = max(anneal_function('cyclic', step, self.k_gamma, self.x0_gamma,
-                                                         len(self.train.dlp) * self.config.warm_up_epochs),
-                                         self.config.gamma1)
-            gamma_weight *= anneal_parameter_gamma / self.config.gamma1
+            # anneal_parameter_gamma = max(anneal_function('logistic', step, self.k_gamma, self.x0_gamma,
+            #                                              len(self.train.dlp) * self.config.warm_up_epochs),
+            #                              self.config.gamma1)
+            # gamma_weight *= anneal_parameter_gamma / self.config.gamma1
+            N = self.config.start_gamma_multiplier
+            G = self.config.gamma
+            v = anneal_function('logistic', step, self.k_gamma, self.x0_gamma,
+                                len(self.train.dlp) * self.config.warm_up_epochs)
+            v = 1-v  # horizontal flip
+            # starts from NG * 1, ends in G, as wanted
+            gamma_weight = ((N-1)*G) * v + G
+
         return gamma_weight
 
     def _run_training(self, **kwargs):
@@ -56,7 +64,7 @@ class VABCTrainer(VAETrainer):
         dln = dataset.dln
         device = self.device
         x_dim = self.config.x_dim
-        nll, kld, loss, anti_rec, rec, kl_weight = (None,) * 6
+        nll, kld, loss, anti_rec, rec, kl_weight, gamma_weight = (None,) * 7
 
         # warning! need to extend to all cases
         assert len(dlp) >= len(dln)
@@ -99,7 +107,8 @@ class VABCTrainer(VAETrainer):
             #               anti_rec.item(),
             #               rec.item(),
             #               kl_weight, gamma_weight, dataset.split))
-        self._log(dataset.split, epoch, nll=nll.item(), kld=kld.item(), kl_weight=kl_weight, loss=loss.item(),
+        self._log(dataset.split, epoch, nll=nll.item(), kld=kld.item(), kl_weight=kl_weight, gamma_weight=gamma_weight,
+                  loss=loss.item(),
                   rec=rec.item(), anti_rec=anti_rec.item())
 
         return step
