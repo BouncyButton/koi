@@ -1,4 +1,3 @@
-from dotmap import DotMap
 from torch import nn
 
 from koi.config.base_config import BaseConfig
