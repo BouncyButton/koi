@@ -1,6 +1,3 @@
-from dotmap import DotMap
-
-
 class BaseConfig:
     def __init__(self, **kwargs):
         self.start_gamma_multiplier = None
