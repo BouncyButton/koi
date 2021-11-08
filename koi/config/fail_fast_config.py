@@ -1,5 +1,3 @@
-from dotmap import DotMap
-
 from koi.config.base_config import BaseConfig
 
 
