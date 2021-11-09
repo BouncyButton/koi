@@ -20,7 +20,7 @@ def dst(recon_x, x, dst_function='mse'):
         d = BCE
 
     elif dst_function == 'l2-norm':
-        l2_norm = torch.linalg.norm(mu - x, dim=1)
+        l2_norm = torch.linalg.norm(mu - x, keepdim=True)
         d = l2_norm
 
     elif dst_function == 'squared-euclidean':
@@ -32,3 +32,5 @@ def dst(recon_x, x, dst_function='mse'):
         raise NotImplementedError()
 
     return d
+
+

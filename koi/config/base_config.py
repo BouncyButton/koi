@@ -1,5 +1,6 @@
 class BaseConfig:
     def __init__(self, **kwargs):
+        self.validation_size = 0.1
         self.start_gamma_multiplier = None
         self.logs_folder = 'I:\\Data\\runs'
         # self.k_folds = 2

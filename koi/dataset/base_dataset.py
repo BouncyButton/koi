@@ -13,6 +13,7 @@ class KoiDataset(Dataset):
         self.batch_size = config.batch_size
         self.dl = self.dlp = self.dln = None
         self.split = split
+        self.config = config
         if create_data_loaders:
             self.create_data_loaders()
 
@@ -50,6 +51,21 @@ class KoiDataset(Dataset):
     def is_train(self):
         return self.split == 'train'
 
+    def get_correct_split(self, dataset):
+        tr_size = int(len(dataset) * (1 - self.config.validation_size))
+        val_size = len(dataset) - tr_size
+
+        train_set_tr, val_set_tr = torch.utils.data.random_split(dataset,
+                                                                 lengths=[tr_size, val_size],
+                                                                 generator=torch.Generator().manual_seed(
+                                                                     self.config.seed))
+        if self.split == 'train':
+            return train_set_tr
+        elif self.split == 'val':
+            return val_set_tr
+        else:
+            raise NotImplementedError
+
     # def create_data_loaders_xv(self, k_folds, positive=[1], negative=[0]):
     #     if not self.is_train():
     #         raise ValueError("Can't cross validate test data")
@@ -62,10 +78,10 @@ class KoiDataset(Dataset):
     #     for fold, (train_ids, val_ids) in enumerate(split):
     #         self.train_folds.append()
 
-        # dataset = ConcatDataset([self.train, self.test])
+    # dataset = ConcatDataset([self.train, self.test])
 
-        # kfold = KFold(n_splits=self.config.k_folds, shuffle=True)
-        # train_subsampler = torch.utils.data.SubsetRandomSampler(train_ids)
-        # val_subsampler = torch.utils.data.SubsetRandomSampler(val_ids)
-        #
-        # for fold, (train_ids, val_ids) in enumerate(kfold.split(self.train)):
+    # kfold = KFold(n_splits=self.config.k_folds, shuffle=True)
+    # train_subsampler = torch.utils.data.SubsetRandomSampler(train_ids)
+    # val_subsampler = torch.utils.data.SubsetRandomSampler(val_ids)
+    #
+    # for fold, (train_ids, val_ids) in enumerate(kfold.split(self.train)):
