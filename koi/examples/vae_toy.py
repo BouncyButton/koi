@@ -7,25 +7,37 @@ from koi.config.base_config import BaseConfig
 from koi.model.vae_cern import VAECern
 from koi.model.vae_correct_loss import VAECorrectLoss
 from koi.trainer.base_trainer import Trainer
-from koi.trainer.vae_cern_trainer import VAECernTrainer
+
 from koi.trainer.vae_trainer import VAETrainer
 from koi.visualizer.toy_example import ToyExampleVisualizer
 
 
 class VAEOnToyDataset:
     def __init__(self, test=False):
-        config = FailFastConfig() if test else VAEConfig()
-        # TODO make toy VAE config and make BaseConfig as abstract as possible
-        train = MoonsDataset(config=config, split='train')
-        val = MoonsDataset(N=10000, config=config, split='val')
-        test = MoonsDataset(N=1000, config=config, split='test')
-        self.trainer = VAETrainer(model_type=VAE, config=config, train=train, val=val, test=test)
+        self.config = FailFastConfig() if test else VAEConfig()
+        self.test = test
 
     def run(self):
-        self.trainer.run_training()
-        generative_negative_error(self.trainer)
-        v = ToyExampleVisualizer(self.trainer)
-        v.show_2d_samples()
+
+        errs = []
+        for i in range(5, 8):
+            # TODO make toy VAE config and make BaseConfig as abstract as possible
+            # self.config.seed = i
+            train = MoonsDataset(config=self.config, split='train')
+            val = MoonsDataset(N=10000, config=self.config, split='val')
+            test = MoonsDataset(N=1000, config=self.config, split='test')
+            self.trainer = VAETrainer(model_type=VAE, config=self.config, train=train, val=val, test=test)
+            self.trainer.run_training()
+            v = ToyExampleVisualizer(self.trainer)
+            v.show_2d_samples()
+            # v.kde_estimation()
+            v.gradient_field(positive=True)
+            v.gradient_field(positive=False)
+
+            errs.append(generative_negative_error(self.trainer, N1=100, stack=False))
+        print("="*80)
+        print(sum(errs)/len(errs))
+
 
 
 if __name__ == '__main__':

@@ -9,10 +9,13 @@ from sklearn.svm import SVC
 from tqdm import tqdm
 
 
-def generative_negative_error(trainer, N1=2, N2=100):
+def generative_negative_error(trainer, N1=2, N2=100, stack=True):
     model = trainer.model
     X, y = trainer.test.X_original, trainer.test.y_original
-    X = torch.stack(X).detach().cpu().numpy()
+    if stack:
+        X = torch.stack(X).detach().cpu().numpy()
+    else:
+        X = torch.tensor(X).detach().cpu().numpy()
     y = np.array(y)
     #X, y = torch.tensor(X).detach().cpu().numpy(), torch.tensor(y).detach().cpu().numpy()
     x_dim = trainer.config.x_dim
@@ -32,5 +35,5 @@ def generative_negative_error(trainer, N1=2, N2=100):
         svm_result = clf.predict(sampled_x)
         tot_neg += np.count_nonzero(svm_result == 0)
 
-    print("total negative: ", tot_neg, "{0:.2%}".format(tot_neg / 100000))
-    return tot_neg / 100000
+    print("total negative: ", tot_neg, "{0:.2%}".format(tot_neg / (N1 * N2)))
+    return tot_neg / (N1 * N2)

@@ -11,8 +11,8 @@ class VABC(VAE):
                       y=torch.tensor(1.)):
 
         # TODO: perché l2-norm funziona meglio di mse?
-        recon_error = dst(recon_x, x, dst_function='l2-norm')
-        #recon_error = recon_error.sum(dim=1)
+        recon_error = dst(recon_x, x, dst_function=self.config.dst_function)
+        # recon_error = recon_error.sum(dim=0)
 
         KLD = -0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp())
 

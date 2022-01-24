@@ -6,14 +6,14 @@ class VAEConfig(BaseConfig):
         super().__init__(**kwargs)
         self.optimizer = 'adam'
         self.torch_device = 'cpu'
-        self.kl_annealing = False
-        self.seed = 0
-        self.epochs = 50
+        self.kl_annealing = True
+        self.seed = 5
+        self.epochs = 20 # 50
         self.warm_up_epochs = self.epochs // 2
-        self.batch_size = 128
+        self.batch_size = 80
         self.learning_rate = 0.001
-        self.encoder_layer_sizes = [2, 10]  # todo remove first
-        self.decoder_layer_sizes = [10, 2]
+        self.encoder_layer_sizes = [2, 20, 20]  # todo remove first
+        self.decoder_layer_sizes = [20, 20, 2]
         self.latent_size = 2
         self.print_every = 1000
         self.beta = 1 # 1 / 20

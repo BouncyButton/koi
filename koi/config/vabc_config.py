@@ -10,12 +10,13 @@ class VABCConfig(BaseConfig):
         self.decoder_layer_sizes = [10, 10, 2]
         self.latent_size = 2
         self.kl_annealing = True
-        self.abc_annealing = True
-        self.epochs = 20
+        self.abc_annealing = False
+        self.epochs = 150
         self.warm_up_epochs = 10
         self.beta = 1/20
         self.gamma = 9
         self.batch_size = 80
+        self.dst_function = 'l2-norm'
         # overwrite with any kwargs provided the current configuration
         # from https://stackoverflow.com/questions/8187082/
         for k, v in kwargs.items():

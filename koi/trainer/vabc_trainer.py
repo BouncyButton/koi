@@ -5,6 +5,7 @@ import torch
 from sklearn.model_selection import KFold
 from tqdm import tqdm
 
+from koi.config.vabc_cern_config import VABCCernConfig
 from koi.config.vabc_config import VABCConfig
 from koi.dataset.base_dataset import KoiDataset
 from koi.model.base_model import GenerativeModel

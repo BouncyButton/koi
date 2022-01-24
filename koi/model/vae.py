@@ -118,8 +118,8 @@ class VAE(GenerativeModel):
 
         N = torch.tensor(x.size(1))
         # NLL = 0.5 * recon_error.sum(dim=1) + 0.5 * N * torch.log(2 * torch.tensor(math.pi)) + 0.5 * torch.log(N)
-        NLL = recon_error.sum(dim=1)
-        NLL = NLL.sum()  # why summing? it should be mean!
+        NLL = recon_error.mean(dim=1)
+        NLL = NLL.sum()  # TODO why summing? it should be mean!
 
         loss = (NLL + KLD * kl_weight)
 

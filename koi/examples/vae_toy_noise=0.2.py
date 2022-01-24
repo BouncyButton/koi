@@ -7,7 +7,7 @@ from koi.config.base_config import BaseConfig
 from koi.model.vae_cern import VAECern
 from koi.model.vae_correct_loss import VAECorrectLoss
 from koi.trainer.base_trainer import Trainer
-from koi.trainer.vae_cern_trainer import VAECernTrainer
+
 from koi.trainer.vae_trainer import VAETrainer
 from koi.visualizer.toy_example import ToyExampleVisualizer
 
@@ -23,9 +23,10 @@ class VAEOnToyDataset:
 
     def run(self):
         self.trainer.run_training()
-        generative_negative_error(self.trainer)
+        generative_negative_error(self.trainer, stack=False)
         v = ToyExampleVisualizer(self.trainer)
         v.show_2d_samples()
+        v.kde_estimation()
 
 
 if __name__ == '__main__':
