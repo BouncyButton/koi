@@ -2,7 +2,7 @@ class BaseConfig:
     def __init__(self, **kwargs):
         self.validation_size = 0.1
         self.start_gamma_multiplier = None
-        self.logs_folder = 'I:\\Data\\runs'
+        self.logs_folder = 'C:\\Data\\runs'  # change meee
         # self.k_folds = 2
         self.gamma = None
         self.abc_annealing = None

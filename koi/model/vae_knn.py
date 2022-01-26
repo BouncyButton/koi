@@ -7,7 +7,7 @@ from koi.model.base_model import GenerativeModel
 from koi.util.utils import dst
 
 
-class VAE(GenerativeModel):
+class VAEKNN(GenerativeModel):
     def __init__(self, config: BaseConfig, *args, **kwargs):
         GenerativeModel.__init__(self, x_dim=config.x_dim, config=config, **kwargs)
         self.kwargs = kwargs
@@ -110,26 +110,27 @@ class VAE(GenerativeModel):
     def save_model(self, filepath, *args, **kwargs):
         pass
 
-    def loss_function(self, recon_x, x, mean, log_var, kl_weight=torch.tensor(1.), **kwargs):
+    def loss_function(self, recon_x, x, mean, log_var, kl_weight=torch.tensor(1.), y=torch.tensor(1.),
+                      knn_distance=torch.tensor(1.)):
 
         recon_error = dst(recon_x, x, dst_function=self.config.dst_function)
 
         KLD = torch.mean(-0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp(), dim=1), dim=0)
 
-        N = torch.tensor(x.size(1))
-        # NLL = 0.5 * recon_error.sum(dim=1) + 0.5 * N * torch.log(2 * torch.tensor(math.pi)) + 0.5 * torch.log(N)
-        NLL = recon_error.mean(dim=1)
-        NLL = NLL.sum()  # TODO why summing? it should be mean!
+
+        gamma = 0.3
+        NLL = torch.mean(1 - torch.exp(-gamma * knn_distance), dim=1) * recon_error * y
+        NLL = NLL.sum()
 
         loss = (NLL + KLD * kl_weight)
 
-        return NLL / x.size(0), KLD / x.size(0), loss / x.size(0)
+        return NLL / y.sum(), KLD / y.sum(), loss / y.sum()
 
     def not_working_loss_function(self, recon_x, x, mean, log_var, kl_weight=torch.tensor(1.)):
 
         recon_error = dst(recon_x, x, dst_function=self.config.dst_function)
 
-        KLD = -0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp(), dim=1) # , dim=0)
+        KLD = -0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp(), dim=1)  # , dim=0)
 
         # KL_weight, anneal_parameter_beta =   # todo: rimuovere secondo elemento tornato
 

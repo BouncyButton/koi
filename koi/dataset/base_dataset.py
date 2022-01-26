@@ -16,6 +16,7 @@ class KoiDataset(Dataset):
         self.config = config
         if create_data_loaders:
             self.create_data_loaders()
+        self.nbrs = None
 
     def __len__(self):
         return len(self.X)
@@ -25,6 +26,17 @@ class KoiDataset(Dataset):
         label = self.transform([self.targets[idx]]).int()
 
         return point, label
+
+    def create_knn_data(self, k=2, negative_label=0, unlabeled_label=1):
+        from sklearn.neighbors import NearestNeighbors
+        negatives = self.X[self.targets == negative_label]
+        self.nbrs = NearestNeighbors(n_neighbors=k, algorithm='ball_tree').fit(negatives)
+
+    def get_kneighbors(self, positive_data):
+        if self.nbrs is None:
+            self.create_knn_data()
+        distances, indices = self.nbrs.kneighbors(positive_data)
+        return distances, indices
 
     def get_indexes(self, class_names):
         indexes = []
