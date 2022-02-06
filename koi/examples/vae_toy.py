@@ -20,8 +20,8 @@ class VAEOnToyDataset:
     def run(self):
 
         errs = []
-        for i in range(5, 10):
-            # TODO make toy VAE config and make BaseConfig as abstract as possible
+        for i in range(3,13):
+
             self.config.seed = i
             train = MoonsDataset(config=self.config, split='train')
             val = MoonsDataset(N=10000, config=self.config, split='val')

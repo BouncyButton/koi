@@ -18,18 +18,22 @@ from koi.visualizer.toy_example import ToyExampleVisualizer
 
 class VABCCernOnToyDataset:
     def __init__(self, test=False):
-        config = VABCCernConfig()
-        # TODO make toy VAE config and make BaseConfig as abstract as possible
-        train = MoonsDataset(config=config, split='train')
-        val = MoonsDataset(N=10000, config=config, split='val')
-        test = MoonsDataset(N=1000, config=config, split='test')
-        self.trainer = VABCCernTrainer(model_type=VABCCern, config=config, train=train, val=val, test=test)
+        self.config = VABCCernConfig()
 
     def run(self):
-        self.trainer.run_training()
-        generative_negative_error(self.trainer, stack=False)
-        v = ToyExampleVisualizer(self.trainer)
-        v.show_2d_samples()
+        for i in range(2,10):
+            self.config.seed = i
+
+            # TODO make toy VAE config and make BaseConfig as abstract as possible
+            train = MoonsDataset(config=self.config, split='train')
+            val = MoonsDataset(N=10000, config=self.config, split='val')
+            test = MoonsDataset(N=1000, config=self.config, split='test')
+            self.trainer = VABCCernTrainer(model_type=VABCCern, config=self.config, train=train, val=val, test=test)
+
+            self.trainer.run_training()
+            generative_negative_error(self.trainer, stack=False)
+            v = ToyExampleVisualizer(self.trainer)
+            v.show_2d_samples()
         # v.gradient_field(positive=True)
         # v.gradient_field(positive=False)
 

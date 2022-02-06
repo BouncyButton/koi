@@ -30,9 +30,9 @@ class VABCOnToyDataset:
             self.trainer.run_training()
             v = ToyExampleVisualizer(self.trainer)
             v.show_2d_samples()
-            v.kde_estimation()
-            v.gradient_field(positive=True)
-            v.gradient_field(positive=False)
+            #v.kde_estimation()
+            #v.gradient_field(positive=True)
+            #v.gradient_field(positive=False)
 
             errs.append(generative_negative_error(self.trainer, N1=100, stack=False))
         print("=" * 80)

@@ -9,10 +9,11 @@ class VABCCernConfig(BaseConfig):
         self.latent_size = 1
         self.kl_annealing = True
         self.abc_annealing = False
-        self.epochs = 20
+        self.epochs = 50
         self.warm_up_epochs = 10
-        self.gamma = 1
+        self.gamma = 0.1
         self.dst_function = 'mse'
+        self.beta = 0.5
 
         # overwrite with any kwargs provided the current configuration
         # from https://stackoverflow.com/questions/8187082/

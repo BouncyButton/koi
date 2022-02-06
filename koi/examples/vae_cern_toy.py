@@ -16,6 +16,7 @@ from koi.visualizer.toy_example import ToyExampleVisualizer
 class VAECernOnToyDataset:
     def __init__(self, test=False):
         config = FailFastConfig() if test else CernConfig()
+        config.seed = 6
         # TODO make toy VAE config and make BaseConfig as abstract as possible
         train = MoonsDataset(config=config, split='train')
         val = MoonsDataset(N=10000, config=config, split='val')

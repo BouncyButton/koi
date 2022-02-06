@@ -17,7 +17,7 @@ class VAECernTrainer(VAETrainer):
             x = x.reshape(-1, x_dim)
             recon_x, recon_log_var, mean, log_var, z = self.model(x, sample=True)
             kl_weight, beta = self.get_current_kl(step)
-            nll, kld, loss = self.model.loss_function(recon_x, x, mean, log_var, kl_weight=kl_weight,
+            nll, kld, loss = self.model.loss_function_rederived(recon_x, x, mean, log_var, kl_weight=kl_weight,
                                                       recon_log_var=recon_log_var)
 
             if dataset.is_train():

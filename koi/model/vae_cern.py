@@ -81,6 +81,26 @@ class VAECern(VAE):
 
         return NLL / x.size(0), KLD / x.size(0), loss / x.size(0)
 
+    def loss_function_rederived(self, recon_x, x, mean, log_var, kl_weight=torch.tensor(1.), recon_log_var=None):
+        recon_error = dst(recon_x, x, dst_function=self.config.dst_function)
+        recon_var = torch.exp(recon_log_var)
+        recon_std = torch.sqrt(recon_var)
+        recon_log_std = torch.log(recon_std)
+
+        NLL = (0.5 * recon_error / recon_var
+               + 0.5*recon_log_var
+               # + 0.5*torch.log(2 * torch.tensor(math.pi))
+               ).sum(dim=1)
+
+        NLL = NLL.sum()
+
+        KLD = torch.mean(-0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp(), dim=1), dim=0)
+
+        loss = (NLL + KLD * kl_weight)
+
+        return NLL / x.size(0), KLD / x.size(0), loss / x.size(0)
+
+
     def loss_function(self, recon_x, x, mean, log_var, kl_weight=torch.tensor(1.), recon_log_var=None):
 
         recon_error = dst(recon_x, x, dst_function=self.config.dst_function)

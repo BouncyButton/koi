@@ -41,6 +41,7 @@ class VAETrainer(Trainer):
                  *args,
                  **kwargs):
         super().__init__(model_type, train, val, test, config)
+
         self.k, self.x0 = None, None
 
         if config.optimizer == 'adam':
@@ -70,9 +71,9 @@ class VAETrainer(Trainer):
         epoch = 0
         for epoch in tqdm(range(epochs)):
             step = self._run_epoch(step, epoch, self.train)
-            self._run_epoch(step, epoch, self.val)
+            # self._run_epoch(step, epoch, self.val)
 
-        self._run_epoch(step, epoch, self.test)
+        # self._run_epoch(step, epoch, self.test)
 
     def _run_epoch(self, step, epoch, dataset, **kwargs):
         if dataset is None:

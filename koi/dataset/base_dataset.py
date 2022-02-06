@@ -50,7 +50,7 @@ class KoiDataset(Dataset):
         Filters MNIST dataset using label.
         '''
         idx = self.get_indexes(labels)
-        dl = DataLoader(self, batch_size=self.batch_size, sampler=sampler.SubsetRandomSampler(idx))
+        dl = DataLoader(dataset=self, batch_size=self.batch_size, sampler=sampler.SubsetRandomSampler(idx))
 
         return dl
 

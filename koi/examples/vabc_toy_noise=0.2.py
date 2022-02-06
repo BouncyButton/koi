@@ -16,20 +16,29 @@ from koi.visualizer.toy_example import ToyExampleVisualizer
 
 class VABCOnToyDataset:
     def __init__(self, test=False):
-        config = VABCConfig()
+        self.config = VABCConfig()
 
-        train = MoonsDataset(config=config, split='train', label_noise=0.2)
-        val = MoonsDataset(N=1000, config=config, split='val', label_noise=0.2)
-        test = MoonsDataset(N=1000, config=config, split='test', label_noise=0.2)
-        self.trainer = VABCTrainer(model_type=VABC, config=config, train=train, val=val, test=test)
+
 
     def run(self):
-        self.trainer.run_training()
-        generative_negative_error(self.trainer, stack=False)
+        errs = []
+        for i in range(3, 13):
+            # TODO make toy VAE config and make BaseConfig as abstract as possible
+            self.config.seed = i
+            train = MoonsDataset(config=self.config, split='train', label_noise=0.2)
+            val = MoonsDataset(N=10000, config=self.config, split='val', label_noise=0.2)
+            test = MoonsDataset(N=1000, config=self.config, split='test', label_noise=0.2)
+            self.trainer = VABCTrainer(model_type=VABC, config=self.config, train=train, val=val, test=test)
+            self.trainer.run_training()
+            v = ToyExampleVisualizer(self.trainer)
+            v.show_2d_samples()
+            # v.kde_estimation()
+            v.gradient_field(positive=True)
+            v.gradient_field(positive=False)
 
-        v = ToyExampleVisualizer(self.trainer)
-        v.show_2d_samples()
-        v.kde_estimation()
+            errs.append(generative_negative_error(self.trainer, N1=100, stack=False))
+        print("=" * 80)
+        print(sum(errs) / len(errs))
 
 
 if __name__ == '__main__':

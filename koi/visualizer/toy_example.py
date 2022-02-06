@@ -32,7 +32,14 @@ class ToyExampleVisualizer:
 
         else:
             # we are sampling using the mean parameter and discarding variance (that is infact not modeled)
-            sampled_x = self.model.inference(z)
+            # sampled_x = self.model.inference(z)
+
+            recon_mu = self.model.inference(z)
+            sampled_x = torch.normal(mean=recon_mu, std=0.5*torch.tensor(self.trainer.config.beta))
+            recon_mu = recon_mu.cpu().detach().numpy()
+            # show mu
+            plt.scatter(recon_mu[:, 0], recon_mu[:, 1], c='red', alpha=0.8, marker='+', zorder=3)
+
 
         sampled_x = sampled_x.cpu().detach().numpy()
         # show dataset

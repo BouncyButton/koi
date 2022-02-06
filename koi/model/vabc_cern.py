@@ -90,7 +90,8 @@ class VABCCern(VAE):
         l_vae = l_vae.sum(dim=1)
         N = torch.tensor(x.size()[1])
 
-        l_vae += torch.log(recon_var.sum(dim=1)+1e-16) + 2 * N * torch.log(2 * torch.tensor(math.pi))  # 2 * avoids nan
+        l_vae += torch.log(recon_var.sum(dim=1)+1e-16) \
+                 + 2 * N * torch.log(2 * torch.tensor(math.pi))  # 2 * avoids nan
 
         def anti_loss(error):
             return torch.log(1 - torch.exp(-error * gamma_weight) + 1e-16)  # * args.gamma_prime
@@ -130,10 +131,16 @@ class VABCCern(VAE):
                    + torch.log(recon_var.sum(dim=1)) \
                    + N * torch.log(2 * torch.tensor(math.pi))
 
+        def anti_cern_loss(recon_error, recon_var):
+            return (recon_error / recon_var).sum(dim=1) \
+                   + torch.log(recon_var.sum(dim=1)) \
+                   + N * torch.log(2 * torch.tensor(math.pi))
+
+
         rec = cern_loss(recon_error, recon_var)
-        anti_rec = anti_loss(cern_loss(recon_error, recon_var))
-        NLL = y * rec - (
-                1 - y) * anti_rec  # non funziona ancora :( mi fa l'effetto opposto (più var in regioni pericolose)
+        anti_rec = anti_loss(anti_cern_loss(recon_error, recon_var))
+        NLL = y * rec \
+              - (1 - y) * anti_rec #+0.001*torch.norm(recon_var)**2# non funziona ancora :( mi fa l'effetto opposto (più var in regioni pericolose)
 
         # questo teoricamente mi sembra giusto, ma mi da risultati sbagliati
         # NLL = (recon_error / recon_var + torch.log(recon_var)).sum(dim=1) \

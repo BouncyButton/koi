@@ -14,11 +14,12 @@ class MoonsDataset(KoiDataset):
         X, y = datasets.make_moons(n_samples=N, noise=moon_noise, random_state=config.seed)
         # if label_noise > 0:
 
-        super().__init__(X, y, torch.Tensor, config=config, **kwargs)
+        super().__init__(X, y, torch.Tensor, config=config, create_data_loaders=False, **kwargs)
 
         self.X_original = deepcopy(X)
         self.y_original = deepcopy(y)
-        y[y == noisy_label] = 1 - (np.random.rand(y[y == noisy_label].size) < (1-label_noise))
+        self.targets[y == noisy_label] = 1 - (np.random.rand(y[y == noisy_label].size) < (1-label_noise))
+        self.create_data_loaders()
 
     def get_positive_data(self):
         return self.X[self.targets == 1]
