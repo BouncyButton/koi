@@ -8,7 +8,7 @@ class VABCConfig(BaseConfig):
         self.start_gamma_multiplier = 4
         self.encoder_layer_sizes = [2, 20, 20]  # todo remove first
         self.decoder_layer_sizes = [20, 20, 2]
-        self.latent_size = 1
+        self.latent_size = 2
         self.kl_annealing = True
         self.abc_annealing = False
         self.epochs = 30

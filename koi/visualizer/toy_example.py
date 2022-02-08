@@ -19,16 +19,18 @@ class ToyExampleVisualizer:
         X, y = self.dataset.X, self.dataset.targets
 
         z = torch.randn([N, cfg.latent_size]).to(device)
-        fig, ax = plt.subplots()
+
 
         show_var = isinstance(self.model, VAECern) or isinstance(self.model, VABCCern)
+
+        fig, ax = plt.subplots(figsize=(4.5, 3))
 
         if show_var:
             recon_mu, recon_log_var = self.model.inference_mean_logvar(z)
             sampled_x = torch.normal(mean=recon_mu, std=torch.exp(0.5 * recon_log_var))
             recon_mu = recon_mu.cpu().detach().numpy()
             # show mu
-            plt.scatter(recon_mu[:, 0], recon_mu[:, 1], c='red', alpha=0.8, marker='+', zorder=3)
+            ax.scatter(recon_mu[:, 0], recon_mu[:, 1], c='red', alpha=0.8, marker='+', zorder=3)
 
         else:
             # we are sampling using the mean parameter and discarding variance (that is infact not modeled)
@@ -38,7 +40,7 @@ class ToyExampleVisualizer:
             sampled_x = torch.normal(mean=recon_mu, std=0.5*torch.tensor(self.trainer.config.beta))
             recon_mu = recon_mu.cpu().detach().numpy()
             # show mu
-            plt.scatter(recon_mu[:, 0], recon_mu[:, 1], c='red', alpha=0.8, marker='+', zorder=3)
+            ax.scatter(recon_mu[:, 0], recon_mu[:, 1], c='red', alpha=0.8, marker='+', zorder=3)
 
 
         sampled_x = sampled_x.cpu().detach().numpy()
@@ -46,10 +48,10 @@ class ToyExampleVisualizer:
         # TODO i'd like to find a printing-friendly color combination, i need external feedback
         colors = ['purple', 'white']
         for i in range(2):
-            plt.scatter(X[:, 0][y == i], X[:, 1][y == i], c=colors[i], edgecolors='k', alpha=0.2)
+            ax.scatter(X[:, 0][y == i], X[:, 1][y == i], c=colors[i], edgecolors='k', alpha=0.2)
 
         # show samples
-        plt.scatter(sampled_x[:, 0], sampled_x[:, 1], c='green', alpha=0.8, marker='x')
+        ax.scatter(sampled_x[:, 0], sampled_x[:, 1], c='green', alpha=0.8, marker='x')
 
         # compose custom legend
         legend_elements = [plt.Line2D([0], [0], marker='o', color='w', label='0',
@@ -61,6 +63,8 @@ class ToyExampleVisualizer:
         ax.legend(handles=legend_elements)
         if not test:
             plt.show(block=True)
+
+        fig.savefig("test1200t.pdf", format='pdf', dpi=1200, bbox_inches='tight', transparent=True)
 
     def kde_estimation(self):
         cfg = self.model.config
